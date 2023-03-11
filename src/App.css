@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  padding: 25px;
 }
 
 .App-logo {
@@ -35,4 +36,20 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.api-loading {
+  margin-top: 10px;
+  height: 120px;
+}
+
+.translation-logo {
+  height: 40px;
+}
+
+.translation-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
 }

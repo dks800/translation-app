@@ -2,6 +2,8 @@ import "./App.css";
 import { useState, useEffect } from "react";
 import Dropdown from "./components/Dropdown";
 import axios from "axios";
+import Loading from "./components/Loading";
+import API_Loading from "./img/infinite-loading.gif";
 
 function App() {
   const [languageList, setLanguageList] = useState([]);
@@ -9,6 +11,7 @@ function App() {
   const [to, setTo] = useState("");
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
+  const [isAPILoading, setIsAPILoading] = useState(false);
 
   useEffect(() => {
     axios
@@ -24,6 +27,7 @@ function App() {
     if (!to || !from) return alert("Please select To/From language");
     if (!input || input.length < 1)
       return alert("Please enter text to translate");
+    setIsAPILoading(true);
     let params = new URLSearchParams();
     params.append("q", input);
     params.append("source", from);
@@ -38,22 +42,42 @@ function App() {
       })
       .then((res) => {
         setOutput(res?.data?.translatedText);
+        setIsAPILoading(false);
+      })
+      .catch((err) => {
+        console.err(err);
+        setIsAPILoading(false);
       });
   };
 
   return (
     <div className="App translate-app">
-      <h1>Translation App</h1>
+      <h1 className="translation-title">
+        <img
+          className="translation-logo"
+          src="https://img.freepik.com/free-icon/language_318-410798.jpg"
+          alt="Translation Logo"
+        />{" "}
+        Translation App
+      </h1>
       <div className="translate-controls">
         <div>
           <div>
             <p>From:</p>
-            <Dropdown value={from} valueUpdate={setFrom} data={languageList} />
+            {languageList.length < 1 ? (
+              <Loading />
+            ) : (
+              <Dropdown
+                value={from}
+                valueUpdate={setFrom}
+                data={languageList}
+              />
+            )}
           </div>
           <textarea
             value={input}
             onInput={(e) => setInput(e.target.value)}
-            cols={50}
+            cols={40}
             rows={8}
             placeholder="Enter a phrase to translate"
           ></textarea>
@@ -61,18 +85,31 @@ function App() {
         <div>
           <div>
             <p>To:</p>
-            <Dropdown value={to} valueUpdate={setTo} data={languageList} />
+            {languageList.length < 1 ? (
+              <Loading />
+            ) : (
+              <Dropdown value={to} valueUpdate={setTo} data={languageList} />
+            )}
           </div>
           <textarea
             resize="false"
             value={output}
-            cols={50}
+            cols={40}
             rows={8}
             readOnly
           ></textarea>
         </div>
       </div>
-      <button onClick={translateMyText}>Translate</button>
+      {isAPILoading ? (
+        <img
+          className="api-loading"
+          title="Loading..."
+          src={API_Loading}
+          alt="Loading..."
+        />
+      ) : (
+        <button onClick={translateMyText}>Translate</button>
+      )}
     </div>
   );
 }
